@@ -11,7 +11,7 @@ url: . # CHANGE BACK HERE
 #url: https://heliumjk.github.io
 #url: https://hermannsblum.github.io/segment-me-if-you-can
 #baseurl: "/segment-me-if-you-can"
-baseurl: "/uda_survey"
+baseurl: "/survey"
 # Themes are encouraged to use these universal variables
 # so be sure to set them if your theme uses them.
 #
