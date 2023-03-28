@@ -1,0 +1,548 @@
+---
+layout: default
+title: Leaderboard
+---
+{% include JB/setup %}
+    <!-- Content Area Start -->
+    <div id="content">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <div class="page-header-title">
+              <h2 class="heading-title text-center">Leaderboard</h2>
+                <h3 class="heading-title text-center">Unsupervised Domain Adaptation for Semantic Segmentation</h3>
+                <p>
+          Welcome to the leaderboard for unsupervised domain adaptation for semantic segmentation! 
+        </p>
+                <p>
+          Please note that we provide three different leaderboards divided after the respective backbones. The values are directly taken from the respective papers and 
+                    without running any evaluation on our site. 
+                    Initially all tables are sorted in descending order w.r.t. 
+                    their GTA5 Adaptation performance but you can use your own sorting based on the different columns by clicking on the column head.
+                    For the vast majority also direct links to the papers are provided. Note that IEEE access is required for some of them but most of them
+                    lead Arxiv-Links.
+                    At the end of each table you can find a scroll bar to scroll through the entire table. Please also note that the gain of each approach is reported
+                    based on the Source-Only performance which can differ significantly. Therefore the ranking w.r.t the gain and the absolute adaptation performance will differ.
+        </p>
+            </div>
+          </div>
+        </div>
+          
+       
+        
+
+        <div class="row justify-content-md-center">
+          <div class="col-md-auto col-sm-12">
+            <div class="text-center">
+              <h4 class="sub-title">ResNet-101</h4>
+            </div>
+
+            <div id="resnet101_table"></div>
+           </div>
+        </div>
+          
+        <div class="row mt-5 justify-content-md-center">
+          <div class="col-md-auto col-sm-12">
+            <div class="text-center">
+              <h4 class="sub-title">DAFormer</h4>
+            </div>
+
+            <div id="daformer_table"></div>
+         </div>
+        </div>
+
+         <div class="row mt-5 justify-content-md-center">
+          <div class="col-md-auto col-sm-12">
+            <div class="text-center">
+              <h4 class="sub-title">VGG-16</h4>
+            </div>
+
+            <div id="vgg16_table"></div>
+         </div>
+        </div>
+          
+        
+       
+          
+
+            <script>
+
+              //var fpr95 = '<svg height="1.2em" style="margin-top: 2px" viewBox="-2 0 120 52" version="1.1"><text style="font-weight:bold;font-size:40px;line-height:125%;letter-spacing:0px;fill:#363636;fill-opacity:1;" x="-4.5" y="38">FPR</text><text style="font-weight:bold;font-size:30px;line-height:125%;letter-spacing:0px;fill:#363636;fill-opacity:1;" x="78.6" y="50.5">95</text></svg>';
+              var black_cross = '<svg enable-background="new 0 0 24 24" height="14" width="14" viewBox="0 0 24 24" xml:space="preserve"><path fill="#222222" d="M22.245,4.015c0.313,0.313,0.313,0.826,0,1.139l-6.276,6.27c-0.313,0.312-0.313,0.826,0,1.14l6.273,6.272  c0.313,0.313,0.313,0.826,0,1.14l-2.285,2.277c-0.314,0.312-0.828,0.312-1.142,0l-6.271-6.271c-0.313-0.313-0.828-0.313-1.141,0  l-6.276,6.267c-0.313,0.313-0.828,0.313-1.141,0l-2.282-2.28c-0.313-0.313-0.313-0.826,0-1.14l6.278-6.269  c0.313-0.312,0.313-0.826,0-1.14L1.709,5.147c-0.314-0.313-0.314-0.827,0-1.14l2.284-2.278C4.308,1.417,4.821,1.417,5.135,1.73  L11.405,8c0.314,0.314,0.828,0.314,1.141,0.001l6.276-6.267c0.312-0.312,0.826-0.312,1.141,0L22.245,4.015z"></path></svg>';
+              var black_tick = '<svg enable-background="new 0 0 24 24" height="14" width="14" viewBox="0 0 24 24" xml:space="preserve"><path fill="#222222" clip-rule="evenodd" d="M21.652,3.211c-0.293-0.295-0.77-0.295-1.061,0L9.41,14.34  c-0.293,0.297-0.771,0.297-1.062,0L3.449,9.351C3.304,9.203,3.114,9.13,2.923,9.129C2.73,9.128,2.534,9.201,2.387,9.351  l-2.165,1.946C0.078,11.445,0,11.63,0,11.823c0,0.194,0.078,0.397,0.223,0.544l4.94,5.184c0.292,0.296,0.771,0.776,1.062,1.07  l2.124,2.141c0.292,0.293,0.769,0.293,1.062,0l14.366-14.34c0.293-0.294,0.293-0.777,0-1.071L21.652,3.211z" fill-rule="evenodd"></path></svg>';
+
+              //create Tabulator on DOM element with id "example-table"
+              var resnet101_table = new Tabulator("#resnet101_table", {initialSort:[
+                {column:"GTA5Adaptation", dir:"des"}, //sort by this firs
+                ],  
+                columns: [ //Define Table Columns
+                  {
+                    title: "Method",
+                    field: "Method",
+                    width: 250,
+                    headerSort: false,
+                    mutator: function (value, data, type, params, component) {
+                      method = value;
+                      if (data.paper) {
+                        method += ' <a href="' + data.paper + '" target="_blank">[paper]</a>';
+                      }
+                      return method;
+                    },
+                    formatter: 'html'
+                  },
+                    {
+                    title: "Date",
+                    field: "YearMonthDay",
+                    //width: 150,
+                    headerSort: true,
+                    mutator: function (value, data, type, params, component) {
+                      method = value
+                      return method;
+                    },
+                    formatter: 'html'
+                  },
+    
+                    {
+                    title: 'Input Space',
+                    field: "InputSpace",
+                    align: "center",
+                    formatter: 'lookup',
+                    formatterParams: { false: black_cross, true: black_tick },
+                    headerSort: true
+                  },
+                    {
+                    title: 'Feature Space',
+                    field: "FeatureSpace",
+                    align: "center",
+                    formatter: 'lookup',
+                    formatterParams: { false: black_cross, true: black_tick },
+                    headerSort: true
+                  },
+                    {
+                    title: 'Output Space',
+                    field: "OutputSpace",
+                    align: "center",
+                    formatter: 'lookup',
+                    formatterParams: { false: black_cross, true: black_tick },
+                    headerSort: true
+                  },
+                  {//column group
+                    title: "GTA5",
+                    columns: [
+                      {
+                        title: "Source-Only",
+                        field: "GTA5Baseline",
+                        cssClass: "column-group-left",
+                        sorter: "string",
+                        allowEmpty: true,
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                      {
+                        title: "Adaptation",
+                        field: "GTA5Adaptation",
+                        sorter: "string",
+                        allowEmpty: true,
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "asc"
+                      },
+                        {
+                        title: "Gain",
+                        field: "GTA5Gain",
+                        sorter: "number",
+                        allowEmpty: true,
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "asc"
+                      },
+                    ],
+                  },
+                  {//column group
+                    title: "Synthia",
+                    columns: [
+                      {
+                        title: "Source-Only",
+                        field: "SYNTHIABaseline",
+                        align: "right",
+                        allowEmpty: true,
+                        cssClass: "column-group-left",
+                        sorter: "number",
+                        formatter: "html",
+                        sorterParams: { alignEmptyValues: 'top' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                      {
+                        title: "Adaptation",
+                        field: "SYNTHIAAdaptation",
+                        align: "right",
+                        sorter: "number",
+                        allowEmpty: true,
+                        formatter: "html", 
+                        sorterParams: { alignEmptyValues: 'top' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                        {
+                        title: "Gain",
+                        field: "SynthiaGain",
+                        align: "right",
+                        sorter: "number",
+                        allowEmpty: true,
+                        formatter: "html", 
+                        sorterParams: { alignEmptyValues: 'top' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                    ],
+                  },
+                     {
+                    title: "Conference/Journal",
+                    field: "Conf-Jour Name",
+                    //width: 150,
+                    headerSort: true,
+                    mutator: function (value, data, type, params, component) {
+                      method = value
+                      return method;
+                    },
+                    formatter: 'html'
+                  },
+                ],
+                //initialSort: [{ column: "LaF_AP", dir: "desc" }],
+              });
+              
+             //create Tabulator on DOM element with id "example-table"
+              var daformer_table = new Tabulator("#daformer_table", {initialSort:[
+                {column:"GTA5Adaptation", dir:"des"}, //sort by this firs
+                ],  
+                columns: [ //Define Table Columns
+                  {
+                    title: "Method",
+                    field: "Method",
+                    width: 250,
+                    headerSort: false,
+                    mutator: function (value, data, type, params, component) {
+                      method = value;
+                      if (data.paper) {
+                        method += ' <a href="' + data.paper + '" target="_blank">[paper]</a>';
+                      }
+                      return method;
+                    },
+                    formatter: 'html'
+                  },
+                    {
+                    title: "Date",
+                    field: "YearMonthDay",
+                    //width: 150,
+                    headerSort: true,
+                    mutator: function (value, data, type, params, component) {
+                      method = value
+                      return method;
+                    },
+                    formatter: 'html'
+                  },
+    
+                    {
+                    title: 'Input Space',
+                    field: "InputSpace",
+                    align: "center",
+                    formatter: 'lookup',
+                    formatterParams: { false: black_cross, true: black_tick },
+                    headerSort: true
+                  },
+                    {
+                    title: 'Feature Space',
+                    field: "FeatureSpace",
+                    align: "center",
+                    formatter: 'lookup',
+                    formatterParams: { false: black_cross, true: black_tick },
+                    headerSort: true
+                  },
+                    {
+                    title: 'Output Space',
+                    field: "OutputSpace",
+                    align: "center",
+                    formatter: 'lookup',
+                    formatterParams: { false: black_cross, true: black_tick },
+                    headerSort: true
+                  },
+                  {//column group
+                    title: "GTA5",
+                    columns: [
+                      {
+                        title: "Source-Only",
+                        field: "GTA5Baseline",
+                        cssClass: "column-group-left",
+                        sorter: "string",
+                        allowEmpty: true,
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                      {
+                        title: "Adaptation",
+                        field: "GTA5Adaptation",
+                        sorter: "string",
+                        allowEmpty: true,
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "asc"
+                      },
+                        {
+                        title: "Gain",
+                        field: "GTA5Gain",
+                        sorter: "number",
+                        allowEmpty: true,
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "asc"
+                      },
+                    ],
+                  },
+                  {//column group
+                    title: "Synthia",
+                    columns: [
+                      {
+                        title: "Source-Only",
+                        field: "SYNTHIABaseline",
+                        align: "right",
+                        allowEmpty: true,
+                        cssClass: "column-group-left",
+                        sorter: "number",
+                        formatter: "html",
+                        sorterParams: { alignEmptyValues: 'top' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                      {
+                        title: "Adaptation",
+                        field: "SYNTHIAAdaptation",
+                        align: "right",
+                        sorter: "number",
+                        allowEmpty: true,
+                        formatter: "html", 
+                        sorterParams: { alignEmptyValues: 'top' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                        {
+                        title: "Gain",
+                        field: "SynthiaGain",
+                        align: "right",
+                        sorter: "number",
+                        allowEmpty: true,
+                        formatter: "html", 
+                        sorterParams: { alignEmptyValues: 'top' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                    ],
+                  },
+                     {
+                    title: "Conference/Journal",
+                    field: "Conf-Jour Name",
+                    //width: 150,
+                    headerSort: true,
+                    mutator: function (value, data, type, params, component) {
+                      method = value
+                      return method;
+                    },
+                    formatter: 'html'
+                  },
+                ],
+                //initialSort: [{ column: "LaF_AP", dir: "desc" }],
+              });
+                
+                
+             //create Tabulator on DOM element with id "example-table"
+              var vgg16_table = new Tabulator("#vgg16_table", {initialSort:[
+                {column:"GTA5Adaptation", dir:"des"}, //sort by this firs
+                ],  
+                columns: [ //Define Table Columns
+                  {
+                    title: "Method",
+                    field: "Method",
+                    width: 250,
+                    headerSort: false,
+                    mutator: function (value, data, type, params, component) {
+                      method = value;
+                      if (data.paper) {
+                        method += ' <a href="' + data.paper + '" target="_blank">[paper]</a>';
+                      }
+                      return method;
+                    },
+                    formatter: 'html'
+                  },
+                    {
+                    title: "Date",
+                    field: "YearMonthDay",
+                    //width: 150,
+                    headerSort: true,
+                    mutator: function (value, data, type, params, component) {
+                      method = value
+                      return method;
+                    },
+                    formatter: 'html'
+                  },
+    
+                    {
+                    title: 'Input Space',
+                    field: "InputSpace",
+                    align: "center",
+                    formatter: 'lookup',
+                    formatterParams: { false: black_cross, true: black_tick },
+                    headerSort: true
+                  },
+                    {
+                    title: 'Feature Space',
+                    field: "FeatureSpace",
+                    align: "center",
+                    formatter: 'lookup',
+                    formatterParams: { false: black_cross, true: black_tick },
+                    headerSort: true
+                  },
+                    {
+                    title: 'Output Space',
+                    field: "OutputSpace",
+                    align: "center",
+                    formatter: 'lookup',
+                    formatterParams: { false: black_cross, true: black_tick },
+                    headerSort: true
+                  },
+                  {//column group
+                    title: "GTA5",
+                    columns: [
+                      {
+                        title: "Source-Only",
+                        field: "GTA5Baseline",
+                        align: "right",
+                        cssClass: "column-group-left",
+                        sorter: "number",
+                        allowEmpty: true, 
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                      {
+                        title: "Adaptation",
+                        field: "GTA5Adaptation",
+                        align: "right",
+                        sorter: "number",
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "asc"
+                      },
+                        {
+                        title: "Gain",
+                        field: "GTA5Gain",
+                        align: "right",
+                        sorter: "number",
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "asc"
+                      },
+                    ],
+                  },
+                  {//column group
+                    title: "Synthia",
+                    columns: [
+                      {
+                        title: "Source-Only",
+                        field: "SYNTHIABaseline",
+                        align: "right",
+                        cssClass: "column-group-left",
+                        sorter: "number",
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                      {
+                        title: "Adaptation",
+                        field: "SYNTHIAAdaptation",
+                        align: "right",
+                        sorter: "number",
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                        {
+                        title: "Gain",
+                        field: "SynthiaGain",
+                        align: "right",
+                        sorter: "number",
+                        sorterParams: { alignEmptyValues: 'bottom' },
+                        formatter: function (cell, formatterParams, onRendered) {if (cell.getValue() === "-") {return "N/A";}
+                          return (cell.getValue()).toFixed(1) + "%"; //return the contents of the cell;
+                        },
+                        headerSortStartingDir: "desc"
+                      },
+                    ],
+                  },
+                     {
+                    title: "Conference/Journal",
+                    field: "Conf-Jour Name",
+                    //width: 150,
+                    headerSort: true,
+                    mutator: function (value, data, type, params, component) {
+                      method = value
+                      return method;
+                    },
+                    formatter: 'html'
+                  },
+                ],
+                //initialSort: [{ column: "LaF_AP", dir: "desc" }],
+              });
+
+
+             
+
+              fetch('{{ site.baseurl}}/assets/uda_papers_full.json').then(function (response) {
+                response.json().then(function (data){resnet101_table.setData(data["ResNet101"]);
+                                                    vgg16_table.setData(data["VGG16"]);
+                                                     daformer_table.setData(data["DAFormer"]);
+                                                    });
+              });
+              </script>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Content Area End -->
+

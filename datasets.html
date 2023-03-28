@@ -1,0 +1,242 @@
+---
+layout: default
+title: Datasets
+---
+{% include JB/setup %}
+    <!-- Content Area Start -->
+    <div id="content">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h2 class="heading-title text-center">Datasets</h2>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6">
+            <h4 class="sub-title">RoadAnomaly21</h4>
+            <p><strong>Anomaly track:</strong>
+              general anomaly segmentation in full street scenes
+            </p>
+            <ul class="list-featured space-bottom-20">
+              <li>100 test images with pixel-level annotations of resolution 2048x1024 and 1280x720</li>
+              <li>10 extra images published with pixel-level annotations</li>
+              <li>at least one anomalous object per image, e.g. animals and unknown vehicles</li>
+              <li>anomalies can appear anywhere in the image</li>
+              <li>anomalies widely differ in size (from 0.5% to 40% of the image)</li>
+              <li>images were collected from web resources and therefore depict a wide variety of environments</li>
+            </ul>
+            <br><br>
+          </div>
+
+          <div class="col-md-6">
+            <h4 class="sub-title">RoadObstacle21</h4>
+            <p><strong>Obstacle track:</strong>
+              obstacle segmentation with the road as region of interest
+            </p>
+            <ul class="list-featured space-bottom-20">
+              <li>327 test images with pixel-level annotations of resolution 1920x1080</li>
+              <li>30 extra images published with pixel-level annotations</li>
+              <li>the obstacles in this dataset can be understood as anomaly objects as well</li>
+              <li>object types: e.g. stuffed toys, sleighs, tree stumps, ...</li>
+              <li>obstacles appear at different distances (one distance per image)</li>
+              <li>different road surfaces, lighting and weather conditions available</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="mb-60"></div>
+
+        <div class="row">
+
+          <div class="col-md-4">
+            <h4 class="sub-title">Labeling policy</h4>
+            <p>The pixel-level annotations of both datasets include three classes:</p>
+            <ol class="list-featured space-bottom-20">
+              <li>anomaly / obstacle</li>
+              <li>not anomaly / not obstacle</li>
+              <li>void</li>
+            </ol>
+            <p>The 19 evaluation classes from <a href="https://www.cityscapes-dataset.com/" target="_blank">Cityscapes</a> serve as basis to judge whether an object is anomalous or not.
+              We assign image regions to the void class if they cannot be assigned to any of the Cityscapes classes and also do not belong to the objects / regions of interest, i.e. they are neither anomaly nor obstacle.</p>
+            <br><br>
+          </div>
+
+          <div class="col-md-4">
+            <h4 class="sub-title">Anomaly example</h4>
+            <img src="./assets/images/caravan0006_blend.jpg" style="margin-bottom: 15px">
+            <div class="text-center">
+              Figure 1: The anomalous object, in this example the caravan, is highlighted in orange and additionally with green contours. The anomalous objects are allowed to appear anywhere in the image.
+            </div>
+            <br><br>
+          </div>
+          <div class="col-md-4">
+            <h4 class="sub-title">Obstacle example</h4>
+            <img src="./assets/images/one-way-street_dog_2_blend.jpg" style="margin-bottom: 15px">
+            <div class="text-center">
+              Figure 2: The obstacle, in this example a stuffed toy, is highlighted with green contours. The region of interest is given by the road (red contours), darkened regions are excluded from the evaluation.
+            </div>
+            <br><br>
+          </div>
+
+        </div>
+
+        <div class="page-header-title">
+          <h2 class="heading-title text-center">Download Test Images</h2>
+        </div>
+
+        <div class="row justify-content-md-center">
+          <div class="col-md-12">
+            <div class="sub-title text-center">
+              <h4><u>RoadAnomaly21</u></h4>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="pricing-table-block">
+              <div class="plan-name">
+                <h3>Mirror 1</h3>
+              </div>
+              <div class="plan-price">
+                <div class="interval">uni-wuppertal.sciebo.de</div>
+              </div>
+              <div class="plan-signup">
+                <a href="https://uni-wuppertal.sciebo.de/s/TVR7VxukVrV7fUH/download" class="btn btn-common">Download</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="pricing-table-block">
+              <div class="plan-name">
+                <h3>Mirror 2</h3>
+              </div>
+              <div class="plan-price">
+                <div class="interval">robotics.ethz.ch</div>
+              </div>
+              <div class="plan-signup">
+                <a href="http://robotics.ethz.ch/~asl-datasets/2021_SegmentMeIfYouCan/dataset_RoadAnomalyTrack.zip" class="btn btn-common">Download</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="pricing-table-block">
+              <div class="plan-name">
+                <h3>Mirror 3</h3>
+              </div>
+              <div class="plan-price">
+                <div class="interval">zenodo.org</div>
+              </div>
+              <div class="plan-signup">
+                <a href="https://zenodo.org/record/5270237/files/dataset_AnomalyTrack.zip?download=1" class="btn btn-common">Download</a>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="mb-60"></div>
+
+         <div class="row justify-content-md-center">
+          <div class="col-md-12">
+            <div class="sub-title text-center">
+              <h4><u>RoadObstacle21</u></h4>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="pricing-table-block">
+              <div class="plan-name">
+                <h3>Mirror 1</h3>
+              </div>
+              <div class="plan-price">
+                <div class="interval">uni-wuppertal.sciebo.de</div>
+              </div>
+              <div class="plan-signup">
+                <a href="https://uni-wuppertal.sciebo.de/s/wQQq2saipS339QA/download" class="btn btn-common">Download</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="pricing-table-block">
+              <div class="plan-name">
+                <h3>Mirror 2</h3>
+              </div>
+              <div class="plan-price">
+                <div class="interval">robotics.ethz.ch</div>
+              </div>
+              <div class="plan-signup">
+                <a href="http://robotics.ethz.ch/~asl-datasets/2021_SegmentMeIfYouCan/dataset_ObstacleTrack.zip" class="btn btn-common">Download</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="pricing-table-block">
+              <div class="plan-name">
+                <h3>Mirror 3</h3>
+              </div>
+              <div class="plan-price">
+                <div class="interval">zenodo.org</div>
+              </div>
+              <div class="plan-signup">
+                <a href="https://zenodo.org/record/5281633/files/dataset_ObstacleTrack.zip?download=1" class="btn btn-common">Download</a>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="mb-60"></div>
+
+        <div class="row  justify-content-md-center">
+          <div class="col-md-12">
+            <div class="sub-title text-center">
+              <h4><u>LostAndFound</u></h4>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="pricing-table-block">
+              <div class="plan-name">
+                <h3>In cooperation with Daimler</h3>
+              </div>
+              <div class="plan-price">
+                <div class="interval">6d-vision.com</div>
+              </div>
+              <div class="plan-signup">
+                <a href="https://www.6d-vision.com/current-research/lostandfounddataset" class="btn btn-common" target="_blank">Go to page</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="pricing-table-block">
+              <div class="plan-name">
+                <h3>Mirror by DHBW Stuttgart</h3>
+              </div>
+              <div class="plan-price">
+                <div class="interval">dhbw-stuttgart.de</div>
+              </div>
+              <div class="plan-signup">
+                <a href="https://wwwlehre.dhbw-stuttgart.de/~sgehrig/lostAndFoundDataset/index.html" class="btn btn-common" target="_blank">Go to page</a>
+              </div>
+            </div>
+          </div>
+
+
+
+        </div>
+
+      </div>
+    </div>
+    <!-- Content Area End -->
+<!--    <div class="text-center">Add content here</a> </div>-->

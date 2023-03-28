@@ -1,0 +1,103 @@
+---
+layout: default
+title: Submit
+---
+{% include JB/setup %}
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.61.0/lib/codemirror.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.61.0/addon/runmode/runmode-standalone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.61.0/mode/python/python.min.js"></script>
+
+    <div id="content">
+      <div class="container">
+        <div class="row">
+
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h2 class="heading-title text-center">Submit Your Method</h2>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center">
+            <p>
+              If you like to submit a method, please get in touch with us via
+            <script>
+              var part1 = "submission";
+              var part2 = Math.pow(2,6);
+              var part3 = String.fromCharCode(part2);
+              var part4 = "segmentmeifyoucan.com";
+              var part5 = part1 + String.fromCharCode(part2) + part4;
+                document.write("<a href= " + "mai" + "lto" + ":" + part5 + " >" + part5 + "</a>.");
+            </script>
+            </p>
+        </div>
+        <div class="mb-60"></div>
+
+        <p class="lead">In order to evaluate your method, we require pixel-wise anomaly / obstacle scores, where higher values correspond to anomaly / obstacle prediction.
+          Our benchmark <a href="https://github.com/adynathos/road-anomaly-benchmark" target="_blank">code</a> provides an inference pipeline for that. Then, please send us a download link (via eg. google drive, dropbox, ...) for the computed score files.</p><br>
+
+        <h4>Example inference script for a dummy method:</h4>
+
+
+    <pre><code id="python_code">
+from tqdm import tqdm
+import cv2 as cv
+from road_anomaly_benchmark.evaluation import Evaluation
+
+def my_dummy_method(image):
+    """ Very naive method: return color saturation """
+    image_hsv = cv.cvtColor(image, cv.COLOR_RGB2HSV_FULL)
+    scores = image_hsv[:, :, 1].astype(np.float) * (1./255.)
+    return scores
+
+def main():
+    ev = Evaluation(method_name = 'Dummy', dataset_name = 'AnomalyTrack-test')
+    for frame in tqdm(ev.get_dataset()):
+        anomaly_p = my_dummy_method(frame.image)
+        ev.save_output(frame, anomaly_p)
+    ev.wait_to_finish_saving()
+
+if __name__ == '__main__':
+    main()
+    </code></pre>
+      <script type="text/javascript">
+          window.onload = function(){
+              var codeElement = document.getElementById('python_code');
+              // Add code mirror class for coloring (default is the theme)
+              codeElement.classList.add( 'cm-s-default' );
+              var code = codeElement.innerText;
+  
+              codeElement.innerHTML = "";
+  
+              CodeMirror.runMode(
+                code,
+                'python',
+                codeElement
+              );
+          };
+      </script>
+
+        <p class="lead">The output scores will be stored as <i>.hdf5</i> files by default in the directory <span style="background-color: #E8E8E8">./outputs/anomaly_p/</span>
+        (sub-directory <span style="background-color: #E8E8E8">Dummy/AnomalyTrack-all</span> for the example script).
+        Replace the function <span style="background-color: #E8E8E8">my_dummy_method</span> with your method and change the <span style="background-color: #E8E8E8">method_name</span> accordingly.
+        For the obstacle track, change <span style="background-color: #E8E8E8">dataset_name</span> to <span style="background-color: #E8E8E8">ObstacleTrack-all</span>.</p>
+
+        <script type="text/javascript">
+            window.onload = function(){
+                var codeElement = document.getElementById('python_code-2');
+                codeElement.classList.add( 'cm-s-default' );
+                var code = codeElement.innerText;
+                codeElement.innerHTML = "";
+                CodeMirror.runMode(
+                  code,
+                  'python',
+                  codeElement
+                );
+            };
+        </script>
+
+      </div>
+    </div>
+    <!-- Content Area End -->
+<!--    <div class="text-center">Add content here</a> </div>-->

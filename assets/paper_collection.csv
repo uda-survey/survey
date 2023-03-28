@@ -1,0 +1,9 @@
+Method,YearMonthDay,ST,AA,SL,Feature Extractor,GTA5 Baseline,SYNTHIA Baseline,GTA5 Adaptation,SYNTHIA Adaptation,Conference Date,Conf-Jour Name,arxiv ID,BibTexKey
+SIBAN,2019-04-01,-,Yes,-,VGG-16,17.9,20.2,34.2,37.2,2019-10-27,ECCV,1904.00876,luo2019significance
+SIBAN,2019-04-01,-,Yes,-,ResNet-101,36.6,38.6,42.6,46.3,2019-10-27,ECCV,1904.00876,luo2019significance
+CyCADA,2017-11-08,Yes,Yes,-,VGG-16,17.9,-,35.4,-,2018-07-10,ICML,1711.03213,hoffman2018cycada
+DCAN,2018-04-16,Yes,Yes,-,VGG-16,27.8,25.9,36.2,35.4,-,-,1804.05827,wu2018dcan
+DCAN,2018-04-16,Yes,Yes,-,ResNet-101,29.8,28,38.5,36.5,-,-,1804.05827,wu2018dcan
+DLOW,2018-12-13,Yes,Yes,-,ResNet-101,36.6,-,42.3,-,2019-06-16,CVPR,1812.05418,gong2019dlow
+CLAN,2018-09-25,-,-,Yes,VGG-16,17.9,20.2,36.6,39.9,-,-,1809.09478,luo2019taking
+CLAN,2018-09-25,-,-,Yes,ResNet-101,36.6,38.6,43.2,47.8,-,-,1809.09478,luo2019taking

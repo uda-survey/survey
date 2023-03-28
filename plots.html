@@ -1,0 +1,93 @@
+---
+layout: default
+title: Plots
+---
+
+{% include JB/setup %}
+    <!-- Content Area Start -->
+    <div id="content">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <div class="page-header-title">
+              <h2 class="heading-title text-center">Plots</h2>
+            </div>
+          </div>
+        </div>
+ 
+  {% include uda_sota.html %}
+          
+<div>
+  <canvas id="myChart"></canvas>
+</div>
+<div>
+  <canvas id="NewChart"></canvas>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctxl = document.getElementById('myChart');
+
+  new Chart(ctxl, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+          
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+const ctxk = document.getElementById('NewChart');
+function fetchData() {
+    const response = fetch('{{ site.baseurl}}/assets/uda_papers.json');
+    const datapoints = response.json();
+    return datapoints;   
+};
+var data = []
+fetch('{{ site.baseurl}}/assets/uda_papers.json').then(response => data = response.json())
+    
+var labels = data.VGG16.map(function(e) {
+   return e.Methods;
+});
+var performance = data.VGG16.map(function(e) {
+   return e.GTA5Baseline;
+});
+  new Chart(ctxk, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '# of Votes',
+        data: performance,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+         
+
+                                          
