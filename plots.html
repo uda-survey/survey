@@ -3,91 +3,1776 @@ layout: default
 title: Plots
 ---
 
+
+
 {% include JB/setup %}
-    <!-- Content Area Start -->
-    <div id="content">
-      <div class="container">
-        <div class="row">
-          <div class="col">
-            <div class="page-header-title">
-              <h2 class="heading-title text-center">Plots</h2>
-            </div>
-          </div>
+<!-- Content Area Start -->
+<div id="content">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div class="page-header-title">
+          <h2 class="heading-title text-center">Plots</h2>
+          <h3 class="sub-title text-center">How-To-Guide</h3>
+          <p>
+          <p>Zoom-In/Out: Simple scroll with your mouse. Reload the page for a reset</p>
+          <p>More details for each datapoint: Hover over the respective point</p>
+          <p>Link to the paper (if existing): Just click on the hover area of each datapoint and you will get to the
+            paper</p>
+          <p>Hide one or more categories: Just click on the category you want to hide in the legend over the plot </p>
+
+
+          </p>
         </div>
- 
-  {% include GTA5Adaptation_uda_sota.html %}
-          
-<div>
-  <canvas id="myChart"></canvas>
-</div>
-<div>
-  <canvas id="NewChart"></canvas>
-</div>
+      </div>
+    </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- <script>
-  const ctxl = document.getElementById('myChart');
+    <div>
+      <div class="text-center">
+        <h2 class="heading-title text-center">ResNet-101</h2>
+        <h4 class="sub-title">Source: GTA5</h4>
+      </div>
+      <canvas id="resnet_plot"></canvas>
+    </div>
 
-  new Chart(ctxl, {
-    type: 'bar', 
-    data: {
-      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-      datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
+    <div>
+      <div class="text-center">
+        <h4 class="sub-title">Source: Synthia</h4>
+      </div>
+      <canvas id="resnet_plot_synthia"></canvas>
+    </div>
+
+    <div>
+      <div class="text-center">
+        <h2 class="heading-title text-center">VGG-16</h2>
+        <h4 class="sub-title">Source: GTA5</h4>
+      </div>
+      <canvas id="plot_vgg16"></canvas>
+    </div>
+
+    <div>
+      <div class="text-center">
+        <h4 class="sub-title">Source: Synthia</h4>
+      </div>
+      <canvas id="plot_synthia_vgg16"></canvas>
+    </div>
+
+    <div>
+      <div class="text-center">
+        <h2 class="heading-title text-center">DAFormer</h2>
+        <h4 class="sub-title">Source: GTA5</h4>
+      </div>
+      <canvas id="plot_daformer"></canvas>
+    </div>
+
+    <div>
+      <div class="text-center">
+        <h4 class="sub-title">Source: Synthia</h4>
+      </div>
+      <canvas id="plot_synthia_daformer"></canvas>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+    <script>
+      Chart.register(ChartDataLabels);
+
+      getData();
+      getDataVGG();
+      getDataDAFormer();
+      Chart.register(zoomPlugin);
+
+      async function getData() {
+        const response = await fetch('{{ site.baseurl}}/assets/uda_papers_full.json');
+        //const response = await fetch('/assets/uda_papers_full.json');
+
+        const data = await response.json();
+
+        const data_resnet = data["ResNet101"]
+        //console.log(data_resnet);
+        //console.log(typeof data_resnet)
+
+        var input_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "circle") { return e; }
+        });
+
+        var filtered_input_approaches = input_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        var hybrid_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "star") { return e; }
+        });
+
+        var filtered_hybrid_approaches = hybrid_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        var feature_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "triangle") { return e; }
+        });
+
+        var filtered_feature_approaches = feature_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        var output_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "cross") { return e; }
+        });
+
+        var filtered_output_approaches = output_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        // input magic
+        var labels_input = filtered_input_approaches.map(function (e) {
+          return e.Method;
+        });
+        var y_data_input = filtered_input_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var source_only_input = filtered_input_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_input = filtered_input_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+        // Create data for the Synthia plots
+        var y_data_input_synthia = filtered_input_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_input_synthia = filtered_input_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_input_synthia = filtered_input_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+        var paper_link_input = filtered_input_approaches.map(function (e) {
+          return e.paper;
+        });
+
+
+        // feature magic
+        var labels_feature = filtered_feature_approaches.map(function (e) {
+          return e.Method;
+        });
+        var y_data_feature = filtered_feature_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var source_only_feature = filtered_feature_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_feature = filtered_feature_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+
+        // Synthia Data Magic
+        var y_data_feature_synthia = filtered_feature_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_feature_synthia = filtered_feature_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_feature_synthia = filtered_feature_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+        var paper_link_feature = filtered_feature_approaches.map(function (e) {
+          return e.paper;
+        });
+
+
+
+        // output magic
+        var labels_output = filtered_output_approaches.map(function (e) {
+          return e.Method;
+        });
+        var y_data_output = filtered_output_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var source_only_output = filtered_output_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_output = filtered_output_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+
+        // Synthia Input Data
+        var y_data_output_synthia = filtered_output_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_output_synthia = filtered_output_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_output_synthia = filtered_output_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+        var paper_link_output = filtered_output_approaches.map(function (e) {
+          return e.paper;
+        });
+
+
+        // hybrid magic
+        var labels_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.Method;
+        });
+        var source_only_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+
+        var paper_link_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.paper;
+        });
+
+        var y_data_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var y_data_hybrid_synthia = filtered_hybrid_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_hybrid_synthia = filtered_hybrid_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_hybrid_synthia = filtered_hybrid_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+
+        //console.log(labels_hybrid)
+        //var input_approaches = data_resnet.filter(x => x.bubbletype == "circle")
+
+        //console.log(labels_input)
+
+
+
+        var resnet_chart = new Chart(document.getElementById("resnet_plot"), {
+          type: 'bubble',
+          data: {
+            datasets: [
+              {
+                labels: labels_input,
+                label: "Input Space",
+                data: y_data_input,
+                source_only_data: source_only_input,
+                gain_data: gain_input,
+                paper_links: paper_link_input,
+                pointStyle: "circle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                  //fontsize: 2,
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_hybrid,
+                label: "Hybrid Space",
+                data: y_data_hybrid,
+                source_only_data: source_only_hybrid,
+                gain_data: gain_hybrid,
+                paper_links: paper_link_hybrid,
+                pointStyle: "rect",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+
+              },
+              {
+                labels: labels_feature,
+                label: "Feature Space",
+                data: y_data_feature,
+                source_only_data: source_only_feature,
+                gain_data: gain_feature,
+                paper_links: paper_link_feature,
+                pointStyle: "triangle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_output,
+                label: "Output Space",
+                data: y_data_output,
+                source_only_data: source_only_output,
+                gain_data: gain_output,
+                paper_links: paper_link_output,
+                pointStyle: "cross",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: false,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    },
+                  }
+                },
+              }
+            ]
+          },
+          options: {
+            onClick: function (event, chartElement) {
+              if (chartElement.length > 0) {
+                //console.log("Chart Length: " + chartElement.length)
+                var index = chartElement[0].index;
+                //window.open("https://arxiv.org/")
+                //console.log("index: " + index)
+                var datasetIndex = chartElement[0].datasetIndex;
+                //console.log("Dataset_Index: " + datasetIndex)
+
+                var datasetLabel = resnet_chart.data.datasets[datasetIndex].labels;
+                //console.log("dataset label: " + datasetLabel)
+                var value = resnet_chart.data.datasets[datasetIndex].paper_links[index];
+                window.open(value)
+                //console.log('Clicked on ' + datasetLabel + ' at index ' + index + ': ' + value);
+              }
+
+            },
+            legend: { display: true },
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'month'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "mIoU"
+                }
+              }
+
+            },
+            plugins: {
+              zoom: {
+                zoom: {
+                  wheel: {
+                    enabled: true,
+                  },
+                  pinch: {
+                    enabled: true
+                  },
+                  mode: 'xy',
+                }
+              },
+            }
+          }
+        });
+
+        var resnet_chart_synthia = new Chart(document.getElementById("resnet_plot_synthia"), {
+          type: 'bubble',
+          data: {
+            datasets: [
+              {
+                labels: labels_input,
+                label: "Input Space",
+                data: y_data_input_synthia,
+                source_only_data: source_only_input_synthia,
+                gain_data: gain_input_synthia,
+                paper_links: paper_link_input,
+                pointStyle: "circle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                  //fontsize: 2,
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_hybrid,
+                label: "Hybrid Space",
+                data: y_data_hybrid_synthia,
+                source_only_data: source_only_hybrid_synthia,
+                gain_data: gain_hybrid_synthia,
+                paper_links: paper_link_hybrid,
+                pointStyle: "rect",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+
+              },
+              {
+                labels: labels_feature,
+                label: "Feature Space",
+                data: y_data_feature_synthia,
+                source_only_data: source_only_feature_synthia,
+                gain_data: gain_feature_synthia,
+                paper_links: paper_link_feature,
+                pointStyle: "triangle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_output,
+                label: "Output Space",
+                data: y_data_output_synthia,
+                source_only_data: source_only_output_synthia,
+                gain_data: gain_output_synthia,
+                paper_links: paper_link_output,
+                pointStyle: "cross",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: false,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    },
+                  }
+                },
+              }
+            ]
+          },
+          options: {
+            onClick: function (event, chartElement) {
+              if (chartElement.length > 0) {
+                //console.log("Chart Length: " + chartElement.length)
+                var index = chartElement[0].index;
+                //window.open("https://arxiv.org/")
+                //console.log("index: " + index)
+                var datasetIndex = chartElement[0].datasetIndex;
+                //console.log("Dataset_Index: " + datasetIndex)
+
+                var datasetLabel = resnet_chart_synthia.data.datasets[datasetIndex].labels;
+                //console.log("dataset label: " + datasetLabel)
+                var value = resnet_chart_synthia.data.datasets[datasetIndex].paper_links[index];
+                window.open(value)
+                //console.log('Clicked on ' + datasetLabel + ' at index ' + index + ': ' + value);
+              }
+
+            },
+            legend: { display: true },
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'month'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "mIoU"
+                }
+              }
+
+            },
+            plugins: {
+              zoom: {
+                zoom: {
+                  wheel: {
+                    enabled: true,
+                  },
+                  pinch: {
+                    enabled: true
+                  },
+                  mode: 'xy',
+                }
+              },
+            }
+          }
+        });
       }
-    }
-  });
-</script> -->
-          
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
+      async function getDataVGG() {
+        const response = await fetch('{{ site.baseurl}}/assets/uda_papers_full.json');
+        //const response = await fetch('/assets/uda_papers_full.json');
 
-const ctxk = document.getElementById('NewChart');
-function fetchData() {
-    const response = fetch('{{ site.baseurl}}/assets/uda_papers.json');
-    const datapoints = response.json();
-    return datapoints;   
-};
-var data = []
-fetch('{{ site.baseurl}}/assets/uda_papers.json').then(response => data = response.json())
-    
-var labels = data.VGG16.map(function(e) {
-   return e.Methods;
-});
-var performance = data.VGG16.map(function(e) {
-   return e.GTA5Baseline;
-});
-  new Chart(ctxk, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: '# of Votes',
-        data: performance,
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
+        const data = await response.json();
+
+        const data_resnet = data["VGG16"]
+        //console.log(data_resnet);
+        //console.log(typeof data_resnet)
+
+        var input_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "circle") { return e; }
+        });
+
+        var filtered_input_approaches = input_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        var hybrid_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "star") { return e; }
+        });
+
+        var filtered_hybrid_approaches = hybrid_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        var feature_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "triangle") { return e; }
+        });
+
+        var filtered_feature_approaches = feature_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        var output_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "cross") { return e; }
+        });
+
+        var filtered_output_approaches = output_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        // input magic
+        var labels_input = filtered_input_approaches.map(function (e) {
+          return e.Method;
+        });
+        var y_data_input = filtered_input_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var source_only_input = filtered_input_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_input = filtered_input_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+        // Create data for the Synthia plots
+        var y_data_input_synthia = filtered_input_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_input_synthia = filtered_input_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_input_synthia = filtered_input_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+        var paper_link_input = filtered_input_approaches.map(function (e) {
+          return e.paper;
+        });
+
+
+        // feature magic
+        var labels_feature = filtered_feature_approaches.map(function (e) {
+          return e.Method;
+        });
+        var y_data_feature = filtered_feature_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var source_only_feature = filtered_feature_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_feature = filtered_feature_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+
+        // Synthia Data Magic
+        var y_data_feature_synthia = filtered_feature_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_feature_synthia = filtered_feature_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_feature_synthia = filtered_feature_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+        var paper_link_feature = filtered_feature_approaches.map(function (e) {
+          return e.paper;
+        });
+
+
+
+        // output magic
+        var labels_output = filtered_output_approaches.map(function (e) {
+          return e.Method;
+        });
+        var y_data_output = filtered_output_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var source_only_output = filtered_output_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_output = filtered_output_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+
+        // Synthia Input Data
+        var y_data_output_synthia = filtered_output_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_output_synthia = filtered_output_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_output_synthia = filtered_output_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+        var paper_link_output = filtered_output_approaches.map(function (e) {
+          return e.paper;
+        });
+
+
+        // hybrid magic
+        var labels_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.Method;
+        });
+        var source_only_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+
+        var paper_link_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.paper;
+        });
+
+        var y_data_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var y_data_hybrid_synthia = filtered_hybrid_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_hybrid_synthia = filtered_hybrid_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_hybrid_synthia = filtered_hybrid_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+
+        //console.log(labels_hybrid)
+        //var input_approaches = data_resnet.filter(x => x.bubbletype == "circle")
+
+        //console.log(labels_input)
+
+
+
+        var resnet_chart = new Chart(document.getElementById("plot_vgg16"), {
+          type: 'bubble',
+          data: {
+            datasets: [
+              {
+                labels: labels_input,
+                label: "Input Space",
+                data: y_data_input,
+                source_only_data: source_only_input,
+                gain_data: gain_input,
+                paper_links: paper_link_input,
+                pointStyle: "circle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                  //fontsize: 2,
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_hybrid,
+                label: "Hybrid Space",
+                data: y_data_hybrid,
+                source_only_data: source_only_hybrid,
+                gain_data: gain_hybrid,
+                paper_links: paper_link_hybrid,
+                pointStyle: "rect",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+
+              },
+              {
+                labels: labels_feature,
+                label: "Feature Space",
+                data: y_data_feature,
+                source_only_data: source_only_feature,
+                gain_data: gain_feature,
+                paper_links: paper_link_feature,
+                pointStyle: "triangle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_output,
+                label: "Output Space",
+                data: y_data_output,
+                source_only_data: source_only_output,
+                gain_data: gain_output,
+                paper_links: paper_link_output,
+                pointStyle: "cross",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: false,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    },
+                  }
+                },
+              }
+            ]
+          },
+          options: {
+            onClick: function (event, chartElement) {
+              if (chartElement.length > 0) {
+                //console.log("Chart Length: " + chartElement.length)
+                var index = chartElement[0].index;
+                //window.open("https://arxiv.org/")
+                //console.log("index: " + index)
+                var datasetIndex = chartElement[0].datasetIndex;
+                //console.log("Dataset_Index: " + datasetIndex)
+
+                var datasetLabel = resnet_chart.data.datasets[datasetIndex].labels;
+                //console.log("dataset label: " + datasetLabel)
+                var value = resnet_chart.data.datasets[datasetIndex].paper_links[index];
+                window.open(value)
+                //console.log('Clicked on ' + datasetLabel + ' at index ' + index + ': ' + value);
+              }
+
+            },
+            legend: { display: true },
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'month'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "mIoU"
+                }
+              }
+
+            },
+            plugins: {
+              zoom: {
+                zoom: {
+                  wheel: {
+                    enabled: true,
+                  },
+                  pinch: {
+                    enabled: true
+                  },
+                  mode: 'xy',
+                }
+              },
+            }
+          }
+        });
+
+        var resnet_chart_synthia = new Chart(document.getElementById("plot_synthia_vgg16"), {
+          type: 'bubble',
+          data: {
+            datasets: [
+              {
+                labels: labels_input,
+                label: "Input Space",
+                data: y_data_input_synthia,
+                source_only_data: source_only_input_synthia,
+                gain_data: gain_input_synthia,
+                paper_links: paper_link_input,
+                pointStyle: "circle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                  //fontsize: 2,
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_hybrid,
+                label: "Hybrid Space",
+                data: y_data_hybrid_synthia,
+                source_only_data: source_only_hybrid_synthia,
+                gain_data: gain_hybrid_synthia,
+                paper_links: paper_link_hybrid,
+                pointStyle: "rect",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+
+              },
+              {
+                labels: labels_feature,
+                label: "Feature Space",
+                data: y_data_feature_synthia,
+                source_only_data: source_only_feature_synthia,
+                gain_data: gain_feature_synthia,
+                paper_links: paper_link_feature,
+                pointStyle: "triangle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_output,
+                label: "Output Space",
+                data: y_data_output_synthia,
+                source_only_data: source_only_output_synthia,
+                gain_data: gain_output_synthia,
+                paper_links: paper_link_output,
+                pointStyle: "cross",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: false,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    },
+                  }
+                },
+              }
+            ]
+          },
+          options: {
+            onClick: function (event, chartElement) {
+              if (chartElement.length > 0) {
+                //console.log("Chart Length: " + chartElement.length)
+                var index = chartElement[0].index;
+                //window.open("https://arxiv.org/")
+                //console.log("index: " + index)
+                var datasetIndex = chartElement[0].datasetIndex;
+                //console.log("Dataset_Index: " + datasetIndex)
+
+                var datasetLabel = resnet_chart_synthia.data.datasets[datasetIndex].labels;
+                //console.log("dataset label: " + datasetLabel)
+                var value = resnet_chart_synthia.data.datasets[datasetIndex].paper_links[index];
+                window.open(value)
+                //console.log('Clicked on ' + datasetLabel + ' at index ' + index + ': ' + value);
+              }
+
+            },
+            legend: { display: true },
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'month'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "mIoU"
+                }
+              }
+
+            },
+            plugins: {
+              zoom: {
+                zoom: {
+                  wheel: {
+                    enabled: true,
+                  },
+                  pinch: {
+                    enabled: true
+                  },
+                  mode: 'xy',
+                }
+              },
+            }
+          }
+        });
       }
-    }
-  });
-</script>
-         
 
-                                          
+
+      async function getDataDAFormer() {
+        const response = await fetch('{{ site.baseurl}}/assets/uda_papers_full.json');
+        //const response = await fetch('/assets/uda_papers_full.json');
+
+        const data = await response.json();
+
+        const data_resnet = data["DAFormer"]
+        //console.log(data_resnet);
+        //console.log(typeof data_resnet)
+
+        var input_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "circle") { return e; }
+        });
+
+        var filtered_input_approaches = input_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        var hybrid_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "star") { return e; }
+        });
+
+        var filtered_hybrid_approaches = hybrid_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        var feature_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "triangle") { return e; }
+        });
+
+        var filtered_feature_approaches = feature_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        var output_approaches = data_resnet.map(function (e) {
+          if (e.bubbletype == "cross") { return e; }
+        });
+
+        var filtered_output_approaches = output_approaches.filter(function (el) {
+          return el != null;
+        });
+
+        // input magic
+        var labels_input = filtered_input_approaches.map(function (e) {
+          return e.Method;
+        });
+        var y_data_input = filtered_input_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var source_only_input = filtered_input_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_input = filtered_input_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+        // Create data for the Synthia plots
+        var y_data_input_synthia = filtered_input_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_input_synthia = filtered_input_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_input_synthia = filtered_input_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+        var paper_link_input = filtered_input_approaches.map(function (e) {
+          return e.paper;
+        });
+
+
+        // feature magic
+        var labels_feature = filtered_feature_approaches.map(function (e) {
+          return e.Method;
+        });
+        var y_data_feature = filtered_feature_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var source_only_feature = filtered_feature_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_feature = filtered_feature_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+
+        // Synthia Data Magic
+        var y_data_feature_synthia = filtered_feature_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_feature_synthia = filtered_feature_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_feature_synthia = filtered_feature_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+        var paper_link_feature = filtered_feature_approaches.map(function (e) {
+          return e.paper;
+        });
+
+
+
+        // output magic
+        var labels_output = filtered_output_approaches.map(function (e) {
+          return e.Method;
+        });
+        var y_data_output = filtered_output_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var source_only_output = filtered_output_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_output = filtered_output_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+
+        // Synthia Input Data
+        var y_data_output_synthia = filtered_output_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_output_synthia = filtered_output_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_output_synthia = filtered_output_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+        var paper_link_output = filtered_output_approaches.map(function (e) {
+          return e.paper;
+        });
+
+
+        // hybrid magic
+        var labels_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.Method;
+        });
+        var source_only_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.GTA5Baseline;
+        });
+        var gain_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.GTA5Gain;
+        });
+
+        var paper_link_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return e.paper;
+        });
+
+        var y_data_hybrid = filtered_hybrid_approaches.map(function (e) {
+          return [e.YearMonthDay, e.GTA5Adaptation];
+        });
+
+        var y_data_hybrid_synthia = filtered_hybrid_approaches.map(function (e) {
+          return [e.YearMonthDay, e.SYNTHIAAdaptation];
+        });
+
+        var source_only_hybrid_synthia = filtered_hybrid_approaches.map(function (e) {
+          return e.SYNTHIABaseline;
+        });
+        var gain_hybrid_synthia = filtered_hybrid_approaches.map(function (e) {
+          return e.SynthiaGain;
+        });
+
+
+        //console.log(labels_hybrid)
+        //var input_approaches = data_resnet.filter(x => x.bubbletype == "circle")
+
+        //console.log(labels_input)
+
+
+
+        var resnet_chart = new Chart(document.getElementById("plot_daformer"), {
+          type: 'bubble',
+          data: {
+            datasets: [
+              {
+                labels: labels_input,
+                label: "Input Space",
+                data: y_data_input,
+                source_only_data: source_only_input,
+                gain_data: gain_input,
+                paper_links: paper_link_input,
+                pointStyle: "circle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                  //fontsize: 2,
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_hybrid,
+                label: "Hybrid Space",
+                data: y_data_hybrid,
+                source_only_data: source_only_hybrid,
+                gain_data: gain_hybrid,
+                paper_links: paper_link_hybrid,
+                pointStyle: "rect",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+
+              },
+              {
+                labels: labels_feature,
+                label: "Feature Space",
+                data: y_data_feature,
+                source_only_data: source_only_feature,
+                gain_data: gain_feature,
+                paper_links: paper_link_feature,
+                pointStyle: "triangle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_output,
+                label: "Output Space",
+                data: y_data_output,
+                source_only_data: source_only_output,
+                gain_data: gain_output,
+                paper_links: paper_link_output,
+                pointStyle: "cross",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: false,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    },
+                  }
+                },
+              }
+            ]
+          },
+          options: {
+            onClick: function (event, chartElement) {
+              if (chartElement.length > 0) {
+                //console.log("Chart Length: " + chartElement.length)
+                var index = chartElement[0].index;
+                //window.open("https://arxiv.org/")
+                //console.log("index: " + index)
+                var datasetIndex = chartElement[0].datasetIndex;
+                //console.log("Dataset_Index: " + datasetIndex)
+
+                var datasetLabel = resnet_chart.data.datasets[datasetIndex].labels;
+                //console.log("dataset label: " + datasetLabel)
+                var value = resnet_chart.data.datasets[datasetIndex].paper_links[index];
+                window.open(value)
+                //console.log('Clicked on ' + datasetLabel + ' at index ' + index + ': ' + value);
+              }
+
+            },
+            legend: { display: true },
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'month'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "mIoU"
+                }
+              }
+
+            },
+            plugins: {
+              zoom: {
+                zoom: {
+                  wheel: {
+                    enabled: true,
+                  },
+                  pinch: {
+                    enabled: true
+                  },
+                  mode: 'xy',
+                }
+              },
+            }
+          }
+        });
+
+        var resnet_chart_synthia = new Chart(document.getElementById("plot_synthia_daformer"), {
+          type: 'bubble',
+          data: {
+            datasets: [
+              {
+                labels: labels_input,
+                label: "Input Space",
+                data: y_data_input_synthia,
+                source_only_data: source_only_input_synthia,
+                gain_data: gain_input_synthia,
+                paper_links: paper_link_input,
+                pointStyle: "circle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                  //fontsize: 2,
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_hybrid,
+                label: "Hybrid Space",
+                data: y_data_hybrid_synthia,
+                source_only_data: source_only_hybrid_synthia,
+                gain_data: gain_hybrid_synthia,
+                paper_links: paper_link_hybrid,
+                pointStyle: "rect",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+
+              },
+              {
+                labels: labels_feature,
+                label: "Feature Space",
+                data: y_data_feature_synthia,
+                source_only_data: source_only_feature_synthia,
+                gain_data: gain_feature_synthia,
+                paper_links: paper_link_feature,
+                pointStyle: "triangle",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: true,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    }
+                  }
+                },
+              },
+              {
+                labels: labels_output,
+                label: "Output Space",
+                data: y_data_output_synthia,
+                source_only_data: source_only_output_synthia,
+                gain_data: gain_output_synthia,
+                paper_links: paper_link_output,
+                pointStyle: "cross",
+                pointHoverRadius: 18,
+                radius: 7,
+                datalabels: {
+                  align: 'end',
+                  anchor: 'end',
+                  formatter: function (value, context) {
+                    return context.dataset.labels[context.dataIndex]
+                  },
+                  font: {
+                    size: 10,
+                  },
+                },
+                tooltip: {
+                  enabled: false,
+                  callbacks: {
+                    label: function (context) {
+                      return ["Method: " + context.dataset.labels[context.dataIndex],
+                      "mIoU after Adaptation: " + context.dataset.data[context.dataIndex][1] + " %",
+                      "mIoU Adaptation Gain: " + " + " + context.dataset.gain_data[context.dataIndex] + " %",
+                      "Source-Only mIoU: " + context.dataset.source_only_data[context.dataIndex] + " %",
+                      "Date of Publication: " + context.dataset.data[context.dataIndex][0]];
+                    },
+                  }
+                },
+              }
+            ]
+          },
+          options: {
+            onClick: function (event, chartElement) {
+              if (chartElement.length > 0) {
+                //console.log("Chart Length: " + chartElement.length)
+                var index = chartElement[0].index;
+                //window.open("https://arxiv.org/")
+                //console.log("index: " + index)
+                var datasetIndex = chartElement[0].datasetIndex;
+                //console.log("Dataset_Index: " + datasetIndex)
+
+                var datasetLabel = resnet_chart_synthia.data.datasets[datasetIndex].labels;
+                //console.log("dataset label: " + datasetLabel)
+                var value = resnet_chart_synthia.data.datasets[datasetIndex].paper_links[index];
+                window.open(value)
+                //console.log('Clicked on ' + datasetLabel + ' at index ' + index + ': ' + value);
+              }
+
+            },
+            legend: { display: true },
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'month'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "mIoU"
+                }
+              }
+
+            },
+            plugins: {
+              zoom: {
+                zoom: {
+                  wheel: {
+                    enabled: true,
+                  },
+                  pinch: {
+                    enabled: true
+                  },
+                  mode: 'xy',
+                }
+              },
+            }
+          }
+        });
+      }
+
+
+
+    </script>
+  </div>
+</div>
+</div>
+</div>
