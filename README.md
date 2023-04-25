@@ -8,6 +8,7 @@ If you want to have your paper added to the database or you find a mistake/missi
 
 ## Citatation
 If you find our paper/website helpful, please consider citing: <br>
+'''
 @misc{schwonberg2023survey,<br>
       title={Survey on Unsupervised Domain Adaptation for Semantic Segmentation for Visual Perception in Automated Driving}, <br>
       author={Manuel Schwonberg and Joshua Niemeijer and Jan-Aike Termöhlen and Jörg P. Schäfer and Nico M. Schmidt and Hanno Gottschalk and Tim Fingscheidt},<br>
@@ -16,6 +17,7 @@ If you find our paper/website helpful, please consider citing: <br>
       archivePrefix={arXiv},<br>
       primaryClass={cs.CV}<br>
 }
+'''
 
 ## Acknowledgements
 For building our website we adapted different code sources. [Tabulator](https://github.com/olifolkerd/tabulator) was used to create the leaderboard table; some code parts were adapted from the awesome [SegmentMeIfYouCan](https://segmentmeifyoucan.com/)-project and the overall website framework is provided by [Helium Jekyl](https://github.com/heliumjk/heliumjk.github.io). 
