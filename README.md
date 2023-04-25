@@ -7,14 +7,14 @@ You can find our paper [Survey on Unsupervised Domain Adaptation for Semantic Se
 If you want to have your paper added to the database or you find a mistake/missing data in our database please open an issue and we will add/correct it. 
 
 ## Citatation
-If you find our paper/website helpful, please consider citing: 
-@misc{schwonberg2023survey,
-      title={Survey on Unsupervised Domain Adaptation for Semantic Segmentation for Visual Perception in Automated Driving}, 
-      author={Manuel Schwonberg and Joshua Niemeijer and Jan-Aike Termöhlen and Jörg P. Schäfer and Nico M. Schmidt and Hanno Gottschalk and Tim Fingscheidt},
-      year={2023},
-      eprint={2304.11928},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+If you find our paper/website helpful, please consider citing: <br>
+@misc{schwonberg2023survey,<br>
+      title={Survey on Unsupervised Domain Adaptation for Semantic Segmentation for Visual Perception in Automated Driving}, <br>
+      author={Manuel Schwonberg and Joshua Niemeijer and Jan-Aike Termöhlen and Jörg P. Schäfer and Nico M. Schmidt and Hanno Gottschalk and Tim Fingscheidt},<br>
+      year={2023},<br>
+      eprint={2304.11928},<br>
+      archivePrefix={arXiv},<br>
+      primaryClass={cs.CV}<br>
 }
 
 ## Acknowledgements
